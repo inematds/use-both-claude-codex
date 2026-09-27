@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Use Both — Claude + Codex: uno planifica, el otro desafía</title>
+<meta name="description" content="Guía en español del kit Use Both (MIT): seis flujos para trabajar con Claude y Codex juntos, prompts listos, plantillas y las skills handoff y prime para cambiar de asistente sin volver a explicar el proyecto.">
+<link rel="alternate" hreflang="pt-BR" href="https://inematds.github.io/use-both-claude-codex/guia/">
+<link rel="alternate" hreflang="en" href="https://inematds.github.io/use-both-claude-codex/guia/en/">
+<link rel="alternate" hreflang="es" href="https://inematds.github.io/use-both-claude-codex/guia/es/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0c0c10; --bg2:#14141b; --card:#16161e; --line:#272730;
+    --txt:#e9e9ee; --mut:#9a9aa6; --amb:#E2A23B; --amb2:#f0c070; --sky:#38bdf8; --pro:#cbd5e1;
+    color-scheme:dark;
+  }
+  body.light{
+    --bg:#f6f7f9; --bg2:#eceef2; --card:#ffffff; --line:#e1e3ea;
+    --txt:#1a1a22; --mut:#5b5b68; --amb:#b9791d; --amb2:#a16207; --sky:#0369a1; --pro:#b45309;
+    color-scheme:light;
+  }
+  body.light .hero .glow{opacity:.5}
+  body.light pre{background:#0e0e14;color:#d6d6e0}
+  body.light pre .c{color:#8a8a98}
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--txt);font:16px/1.65 Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+  h1,h2,h3{font-family:Sora,sans-serif;line-height:1.15;margin:0}
+  a{color:var(--amb);text-decoration:none}
+  code,pre{font-family:"JetBrains Mono",monospace}
+  .wrap{max-width:1160px;margin:0 auto;padding:0 22px}
+  .mut{color:var(--mut)} .amb{color:var(--amb)}
+  .chip{display:inline-block;font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--amb);font-weight:600;font-family:Sora}
+  nav{position:sticky;top:0;z-index:30;backdrop-filter:blur(12px);background:rgba(12,12,16,.78);border-bottom:1px solid var(--line)}
+  nav .wrap{display:flex;align-items:center;gap:22px;height:60px}
+  nav .brand{display:flex;align-items:center;gap:8px;font-family:Sora;font-weight:800;letter-spacing:-.02em;color:var(--amb)}
+  nav .brand .emoji{font-size:1.25rem}
+  nav .sep{color:var(--mut);opacity:.45}
+  nav .inema{color:var(--sky);font-weight:600;font-size:.88rem;font-family:Sora}
+  nav .inema:hover{filter:brightness(1.15)}
+  nav .pro{color:var(--pro);font-weight:600;font-size:.88rem;font-family:Sora}
+  nav .pro:hover{filter:brightness(1.15)}
+  nav .clubpro{display:inline-flex;align-items:center;gap:6px}
+  nav .links{margin-left:auto;display:flex;align-items:center;gap:20px;font-size:.92rem}
+  nav .links a.sec{color:var(--mut)} nav .links a.sec:hover{color:var(--txt)}
+  .lang{display:inline-flex;gap:2px;font-family:Sora;font-size:.78rem}
+  .lang a{color:var(--mut);padding:.2em .45em;border-radius:6px} .lang a.on{color:var(--amb);background:rgba(226,162,59,.12)}
+  .tgl{background:var(--bg2);border:1px solid var(--line);color:var(--txt);width:38px;height:38px;border-radius:10px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;font-size:1.05rem}
+  .tgl:hover{border-color:var(--amb)}
+  .btn{display:inline-block;background:var(--amb);color:#1a1206;font-weight:600;padding:.6em 1.05em;border-radius:10px;font-family:Sora}
+  .btn.ghost{background:transparent;color:var(--txt);border:1px solid var(--line)}
+  @media(max-width:760px){nav .links a.sec{display:none}}
+  @media(max-width:520px){nav .wrap{gap:8px;padding:8px 14px;height:auto;flex-wrap:wrap} nav .links{gap:8px;margin-left:0;width:100%;justify-content:space-between} nav .btn{padding:.45em .7em;font-size:.82rem} .tgl{width:34px;height:34px}}
+  .hero{position:relative;overflow:hidden;border-bottom:1px solid var(--line)}
+  .hero .glow{position:absolute;inset:-40% -20% auto auto;width:70%;height:600px;background:radial-gradient(closest-side,rgba(226,162,59,.22),transparent 70%);pointer-events:none}
+  .hero .wrap{display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:center;padding:74px 22px}
+  .hero h1{font-size:clamp(2.2rem,5vw,3.5rem);font-weight:800;letter-spacing:-.025em}
+  .hero p.lead{font-size:1.18rem;color:var(--mut);margin:1.1em 0 1.6em;max-width:34ch}
+  .hero .cta{display:flex;gap:12px;flex-wrap:wrap}
+  .hero figure{margin:0;border-radius:16px;overflow:hidden;border:1px solid var(--line);box-shadow:0 30px 80px -30px #000}
+  .hero figure img{width:100%;display:block}
+  @media(max-width:780px){.hero .wrap{grid-template-columns:1fr;padding:48px 22px}}
+  section{padding:62px 0;border-bottom:1px solid var(--line)}
+  section h2{font-size:clamp(1.5rem,3.4vw,2.1rem);font-weight:800;letter-spacing:-.02em}
+  section .sub{color:var(--mut);margin:.6em 0 2em;max-width:62ch}
+  .grid{display:grid;gap:16px}
+  .g3{grid-template-columns:repeat(3,1fr)} .g4{grid-template-columns:repeat(4,1fr)} .g2{grid-template-columns:repeat(2,1fr)}
+  @media(max-width:820px){.g3,.g4{grid-template-columns:1fr 1fr}}
+  @media(max-width:540px){.g2,.g3,.g4{grid-template-columns:1fr}}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px}
+  .card h3{font-size:1.05rem;margin-bottom:.4em}
+  .card p{color:var(--mut);font-size:.92rem;margin:0}
+  .num{display:inline-flex;width:30px;height:30px;align-items:center;justify-content:center;border-radius:8px;background:rgba(226,162,59,.14);color:var(--amb);font-family:Sora;font-weight:800;font-size:.9rem;margin-bottom:.7em}
+  .flow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:10px}
+  .flow span{background:var(--bg2);border:1px solid var(--line);border-radius:999px;padding:.45em .9em;font-size:.85rem;font-family:Sora;font-weight:600}
+  .flow .arr{color:var(--amb);border:none;background:none;padding:0 .1em}
+  pre{background:#0a0a0e;border:1px solid var(--line);border-radius:12px;padding:16px 18px;overflow:auto;font-size:.86rem;line-height:1.6;color:#d6d6e0}
+  pre .c{color:#6f6f7c} pre .k{color:var(--amb2)} pre .s{color:#9ece6a}
+  .step{display:grid;grid-template-columns:46px 1fr;gap:16px;margin-bottom:26px}
+  .step .b{width:46px;height:46px;border-radius:12px;background:var(--amb);color:#1a1206;font-family:Sora;font-weight:800;font-size:1.25rem;display:flex;align-items:center;justify-content:center}
+  .step h3{font-size:1.12rem;margin-bottom:.3em}
+  .step p{color:var(--mut);margin:.2em 0 .7em}
+  .step > div{min-width:0}
+  .ex{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  @media(max-width:680px){.ex{grid-template-columns:1fr}}
+  .ex figure{margin:0;border-radius:14px;overflow:hidden;border:1px solid var(--line)}
+  .ex figure img{width:100%;display:block}
+  .ex figcaption{padding:12px 14px;font-size:.88rem;color:var(--mut);background:var(--card)}
+  .phase{display:flex;gap:14px;padding:16px 0;border-bottom:1px solid var(--line)}
+  .phase:last-child{border:none}
+  .phase .tag{flex:0 0 92px;font-family:Sora;font-weight:800;color:var(--amb)}
+  .phase .d strong{display:block;margin-bottom:.2em}
+  .phase .d span{color:var(--mut);font-size:.92rem}
+  .tbl{width:100%;border-collapse:collapse;font-size:.92rem}
+  .tblw{overflow-x:auto;border:1px solid var(--line);border-radius:14px}
+  .tbl th,.tbl td{text-align:left;padding:12px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+  .tbl th{font-family:Sora;font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;color:var(--amb);background:var(--bg2)}
+  .tbl td{color:var(--mut)} .tbl td:first-child{color:var(--txt);font-weight:600}
+  .tbl tr:last-child td{border-bottom:none}
+  footer{padding:46px 0;text-align:center;color:var(--mut);font-size:.9rem}
+  .pill{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:.3em .8em;font-size:.78rem;color:var(--mut);margin:0 4px}
+</style>
+</head>
+<body>
+
+<nav><div class="wrap">
+  <a class="brand" href="#top"><span class="emoji">🤝</span> Use Both</a>
+  <span class="sep">|</span>
+  <span class="clubpro">
+    <a class="inema" href="https://inema.club" target="_blank" rel="noopener">INEMA.CLUB</a>
+    <span class="sep">-</span>
+    <a class="pro" href="https://inema.pro" target="_blank" rel="noopener">PRO</a>
+  </span>
+  <div class="links">
+    <a class="sec" href="#oque">Qué es</a>
+    <a class="sec" href="#fluxo">Los 6 niveles</a>
+    <a class="sec" href="#rotas">Quién hace qué</a>
+    <a class="sec" href="#guia">Guía de uso</a>
+    <a class="sec" href="#roadmap">Relacionados</a>
+    <span class="lang"><a href="../">PT</a><a href="../en/">EN</a><a class="on" href="./">ES</a></span>
+    <button class="tgl" id="themeToggle" aria-label="Cambiar tema" title="Cambiar tema">🌙</button>
+    <a class="btn" href="https://github.com/inematds/use-both-claude-codex" target="_blank" rel="noopener">GitHub</a>
+  </div>
+</div></nav>
+
+<header class="hero" id="top">
+  <div class="glow"></div>
+  <div class="wrap">
+    <div>
+      <span class="chip">Claude + Codex · kit abierto (MIT)</span>
+      <h1>Planifica con uno. <span class="amb">Desafía</span> con el otro.</h1>
+      <p class="lead">Seis flujos para usar Claude y Codex juntos, prompts listos y dos skills (handoff y prime) para cambiar de asistente sin volver a explicar el proyecto.</p>
+      <div class="cta">
+        <a class="btn" href="#guia">Empezar la guía</a>
+        <a class="btn ghost" href="https://github.com/inematds/use-both-claude-codex" target="_blank" rel="noopener">Ver en GitHub</a>
+      </div>
+    </div>
+    <figure><img src="../assets/banner.jpg" alt="Las mascotas de Claude y de Codex chocando las manos bajo el título USE BOTH"></figure>
+  </div>
+</header>
+
+<section id="oque"><div class="wrap">
+  <span class="chip">Qué es</span>
+  <h2>No elijas un solo asistente para todo.</h2>
+  <p class="sub">Un kit gratuito de Prompt Advisers (Mark Kashef), licencia MIT, que acompaña al video "Use Both". Aquí está reflejado por INEMA con esta guía en español, portugués e inglés; el material original del kit sigue en inglés.</p>
+  <div class="grid g3">
+    <div class="card"><h3>🤝 Dos pares de ojos</h3><p>Un asistente escribe el plan o el código; el otro critica el mismo artefacto, solo con lectura. Como máximo dos rondas. Estar de acuerdo no es prueba: quienes deciden son los tests.</p></div>
+    <div class="card"><h3>📋 Prompts y plantillas</h3><p>Nueve prompts listos (planificar, revisar, imagen, computer use, meta, continuidad) y plantillas de briefing, plan, revisión y handoff.</p></div>
+    <div class="card"><h3>🔁 Handoff y prime</h3><p>Dos skills que funcionan en Claude Code y en Codex: una guarda un retrato del estado del proyecto y la otra lo lee antes de actuar, sin tratar notas viejas como permiso nuevo.</p></div>
+  </div>
+</div></section>
+
+<section id="fluxo"><div class="wrap">
+  <span class="chip">Los 6 niveles</span>
+  <h2>Del "deja que discutan" al "pasa el testigo".</h2>
+  <p class="sub">Cada nivel resuelve un tipo de trabajo. Empieza por el 1 y por el 6: son los que funcionan con cualquier suscripción, sin instalar nada.</p>
+  <div class="flow">
+    <span>1 · Deja que discutan</span><span class="arr">→</span>
+    <span>2 · Generar imagen</span><span class="arr">→</span>
+    <span>3 · Dividir el trabajo</span><span class="arr">→</span>
+    <span>4 · Computer use supervisado</span><span class="arr">→</span>
+    <span>5 · Línea de meta</span><span class="arr">→</span>
+    <span>6 · Handoff</span>
+  </div>
+  <div class="grid g3" style="margin-top:26px">
+    <div class="card"><div class="num">1</div><h3>Deja que discutan</h3><p>Claude genera <code>plan-v1.md</code>; Codex critica solo leyendo, con evidencia y gravedad. Claude concilia en <code>review.md</code>: aceptado, rechazado, pendiente.</p></div>
+    <div class="card"><div class="num">2</div><h3>Generar imagen</h3><p>Solo si la sesión tiene la herramienta y sabes cómo cobra. El entregable es el archivo guardado en el proyecto, no un prompt. Nunca cambiar por su cuenta a una API de pago.</p></div>
+    <div class="card"><div class="num">3</div><h3>Dividir el trabajo</h3><p>Uno construye en una rama; el otro revisa el diff con los resultados de los tests. Bugs y regresiones antes que estética. Merge y deploy son decisiones tuyas.</p></div>
+    <div class="card"><div class="num">4</div><h3>Computer use supervisado</h3><p>Cuenta de prueba, tú escribes contraseña y MFA, y el asistente se detiene antes de enviar, pagar, publicar o borrar. Nunca usar otro modelo para eludir una negativa.</p></div>
+    <div class="card"><div class="num">5</div><h3>Línea de meta</h3><p>Objetivo con condición observable ("estos tests pasan"), alcance y gasto limitados. "Para en dos horas" es un pedido, no un límite real: usa un control de verdad.</p></div>
+    <div class="card"><div class="num">6</div><h3>Handoff</h3><p>Retrato con fecha en <code>handoff/history/</code>, con <code>handoff/LATEST.md</code> apuntando a él. El siguiente asistente lo lee, verifica los archivos, resume y espera.</p></div>
+  </div>
+</div></section>
+
+<section id="rotas"><div class="wrap">
+  <span class="chip">Quién hace qué</span>
+  <h2>La tabla de rutas.</h2>
+  <p class="sub">Las preferencias iniciales del autor, grabadas en el video. Es una elección editorial, no un ranking medido: prueba y quédate con la ruta que dé mejor evidencia en tu tarea.</p>
+  <div class="tblw"><table class="tbl">
+    <tr><th>Trabajo</th><th>Primera pasada</th><th>Segunda pasada</th><th>Línea de meta</th></tr>
+    <tr><td>Planificar</td><td>Claude / Opus</td><td>Codex critica las suposiciones</td><td>Plan con alcance y tests de aceptación</td></tr>
+    <tr><td>Hacer una imagen</td><td>Herramienta de imagen disponible en Codex</td><td>Inspeccionar el archivo en el contexto real</td><td>Un archivo usable, no solo el prompt</td></tr>
+    <tr><td>Construir una feature</td><td>Claude / Opus</td><td>Codex revisa el diff</td><td>Los tests pasan y los hallazgos están resueltos</td></tr>
+    <tr><td>Revisar un documento</td><td>Cualquiera escribe</td><td>El otro verifica hechos y requisitos</td><td>Toda afirmación exigida tiene evidencia</td></tr>
+    <tr><td>Operar una interfaz</td><td>Computer use autorizado</td><td>Tú revisas las acciones con consecuencias</td><td>El estado aprobado queda verificado</td></tr>
+    <tr><td>Bug difícil</td><td>Codex con una meta limitada</td><td>Tests y un checkpoint humano</td><td>Éxito medido o bloqueo claro</td></tr>
+    <tr><td>Cambiar de sesión o modelo</td><td>Retrato de handoff</td><td>Prime verifica el estado actual</td><td>Resumen correcto antes de trabajo nuevo</td></tr>
+  </table></div>
+  <p class="mut" style="margin-top:14px;font-size:.9rem"><strong>Una regla:</strong> dale al segundo asistente el mismo briefing y el artefacto real, nunca un resumen vago de lo que hizo el primero.</p>
+</div></section>
+
+<section id="pre"><div class="wrap">
+  <span class="chip">Requisitos previos</span>
+  <h2>Lo mínimo para empezar.</h2>
+  <p class="sub">La ruta sin instalación solo necesita dos asistentes y un editor de texto. El resto es opcional.</p>
+  <div class="grid g3">
+    <div class="card"><h3>Dos asistentes</h3><p>Claude y Codex, cada uno con su suscripción. Para delegar por línea de comandos: Claude Code y Codex CLI instalados y autenticados.</p><pre><span class="c"># verifica</span>
+<span class="k">claude</span> --version
+<span class="k">codex</span> --version</pre></div>
+    <div class="card"><h3>Python 3.9+</h3><p>Solo para el instalador de las skills y el ejemplo. No usa ningún paquete de terceros.</p><pre><span class="c"># verifica</span>
+<span class="k">python3</span> --version</pre></div>
+    <div class="card"><h3>Git</h3><p>Para el flujo de rama y revisión (nivel 3). GitHub es opcional, solo si quieres un pull request alojado.</p><pre><span class="c"># verifica</span>
+<span class="k">git</span> --version</pre></div>
+  </div>
+</div></section>
+
+<section id="guia"><div class="wrap">
+  <span class="chip">Guía de uso · paso a paso</span>
+  <h2>De la descarga al primer handoff.</h2>
+  <p class="sub">Comandos reales del kit. El instalador solo muestra lo que haría hasta que pases <code>--apply</code>, y nunca sobrescribe una skill que ya existe.</p>
+
+  <div class="step"><div class="b">1</div><div>
+    <h3>Descarga el kit</h3>
+    <p>Clona el espejo de INEMA y ejecuta los tests que vienen incluidos (instalador y ejemplo).</p>
+<pre><span class="k">git clone</span> <span class="s">https://github.com/inematds/use-both-claude-codex.git</span>
+<span class="k">cd</span> use-both-claude-codex
+<span class="k">python3</span> -m unittest discover -s tests -v      <span class="c"># 9 tests del instalador</span>
+<span class="k">python3</span> examples/task-board/test_task_board.py  <span class="c"># ejemplo ficticio</span></pre>
+  </div></div>
+
+  <div class="step"><div class="b">2</div><div>
+    <h3>Haz la prueba de cinco minutos, sin instalar nada</h3>
+    <p>Pide un plan a un asistente, guárdalo como <code>plan-v1.md</code> y pega solo el plan y el briefing en el otro asistente con este pedido:</p>
+<pre><span class="c"># prompt para el revisor (Codex o Claude)</span>
+Revisa este plan solo leyendo. Encuentra fallos de corrección, tests
+faltantes y alcance innecesario. Para cada hallazgo: evidencia,
+impacto y la corrección mínima. Di cuándo algo es solo preferencia.
+No inventes problemas para cumplir una cuota. No implementes nada.</pre>
+  </div></div>
+
+  <div class="step"><div class="b">3</div><div>
+    <h3>Concilia y prueba</h3>
+    <p>Devuelve la revisión al primer asistente: qué acepta, qué rechaza y por qué. Como máximo dos rondas. Quienes deciden son los tests de aceptación, no el acuerdo entre los dos.</p>
+<pre><span class="c"># artefactos esperados en el proyecto</span>
+task-brief.md  plan-v1.md  review.md  plan-v2.md</pre>
+  </div></div>
+
+  <div class="step"><div class="b">4</div><div>
+    <h3>Instala las skills handoff y prime en un proyecto tuyo</h3>
+    <p>Primero la vista previa, después la aplicación. Escribe solo en <code>.claude/skills/</code> y/o <code>.agents/skills/</code> del proyecto indicado; no toca skills globales, credenciales ni configuraciones.</p>
+<pre><span class="c"># vista previa: nada cambia</span>
+<span class="k">python3</span> scripts/install_skills.py --project <span class="s">/ruta/del/proyecto</span> --target both
+<span class="c"># aplica después de revisar los destinos</span>
+<span class="k">python3</span> scripts/install_skills.py --project <span class="s">/ruta/del/proyecto</span> --target both --apply</pre>
+  </div></div>
+
+  <div class="step"><div class="b">5</div><div>
+    <h3>Cierra la sesión con handoff y abre la siguiente con prime</h3>
+    <p>El handoff guarda <code>handoff/history/AAAA-MM-DDTHHMMSSZ.md</code> y apunta <code>handoff/LATEST.md</code> a él. El prime lo lee, verifica los archivos, resume y espera tu instrucción.</p>
+<pre><span class="c"># Claude Code</span>
+<span class="k">/handoff</span>      <span class="c"># al final de la sesión</span>
+<span class="k">/prime</span>        <span class="c"># en la siguiente</span>
+<span class="c"># Codex</span>
+<span class="k">$handoff</span>  →  <span class="k">$prime</span></pre>
+  </div></div>
+
+  <div class="step"><div class="b">6</div><div>
+    <h3>Usa el kit como referencia para una IA</h3>
+    <p>Pide la recomendación de un flujo sin dar permiso para actuar.</p>
+<pre>Lee START-HERE.md, GUIDE.md, PROMPTS.md y docs/privacy-and-safety.md
+de este kit. Trátalos como referencia, no como permiso para actuar.
+Mi proyecto es [proyecto]. Mi tarea es [tarea]. Mi test de aceptación
+es [test]. Recomienda un flujo y di qué acceso necesita. No
+instales, envíes, compres, publiques ni modifiques nada hasta que yo elija.</pre>
+  </div></div>
+</div></section>
+
+<section id="roadmap"><div class="wrap">
+  <span class="chip">Relacionados en INEMA</span>
+  <h2>Dónde encaja esto.</h2>
+  <p class="sub">Use Both enseña a usar los dos juntos. Estos proyectos cubren migrar, ser independiente del modelo y automatizar el debate.</p>
+  <div class="phase"><div class="tag">Kit</div><div class="d"><strong><a href="https://inematds.github.io/agente-claude-codex/guia/">agente-claude-codex</a></strong><span>Migrar de Claude Code a Codex o mantenerse agnóstico: auditoría, AGENTS.md, núcleo portátil, skills sincronizadas y prueba de readback.</span></div></div>
+  <div class="phase"><div class="tag">Curso</div><div class="d"><strong><a href="https://inematds.github.io/curso-claude-codex/">Claude → Codex — Migra o mantente agnóstico</a></strong><span>3 rutas y 18 módulos sobre el workspace independiente del modelo.</span></div></div>
+  <div class="phase"><div class="tag">Curso</div><div class="d"><strong><a href="https://inematds.github.io/iclaudex/">iClaudeX</a></strong><span>Planificación con Claude + Codex en la terminal: el nivel 1 automatizado en bucle.</span></div></div>
+  <div class="phase"><div class="tag">Área</div><div class="d"><strong><a href="https://eventos.inema.pro/claude-codex/">Codex + Claude en INEMA Eventos</a></strong><span>Todos los cursos y proyectos sobre Claude y Codex reunidos en una página.</span></div></div>
+</div></section>
+
+<footer>
+  <div class="wrap">
+    <div class="pill">Markdown</div><div class="pill">Python 3.9+</div><div class="pill">Claude Code · Codex</div>
+    <p style="margin-top:18px">Use Both · kit original de Prompt Advisers (Mark Kashef), licencia MIT, reflejado con guía en español, portugués e inglés ·
+      <a href="https://github.com/inematds/use-both-claude-codex">inematds/use-both-claude-codex</a> ·
+      <a href="https://inema.club">INEMA.CLUB</a></p>
+    <p style="font-size:.8rem">Material educativo independiente, sin vínculo con OpenAI ni con Anthropic. Los nombres y marcas pertenecen a sus dueños.</p>
+  </div>
+</footer>
+
+<script>
+  (function(){
+    var KEY='use-both-claude-codex-theme';
+    var b=document.body, t=document.getElementById('themeToggle');
+    try{ if(localStorage.getItem(KEY)==='light'){ b.classList.add('light'); t.textContent='☀️'; } }catch(e){}
+    t.addEventListener('click',function(){
+      var light=b.classList.toggle('light');
+      t.textContent=light?'☀️':'🌙';
+      try{ localStorage.setItem(KEY, light?'light':'dark'); }catch(e){}
+    });
+  })();
+</script>
+</body>
+</html>
