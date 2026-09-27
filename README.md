@@ -40,6 +40,10 @@ python3 scripts/install_skills.py --project /caminho/do/projeto --target both --
 
 No Claude Code: `/handoff` no fim da sessão e `/prime` na próxima. No Codex: `$handoff` e `$prime`.
 
+## O vídeo
+
+Resumo do vídeo "Use Both" e o que ele acrescenta ao kit (conexão por CLI, custo do `/goal`, imagem pela assinatura do Codex, onde seguimos o kit e não o vídeo): [docs/RESUMO-VIDEO.md](docs/RESUMO-VIDEO.md).
+
 ## Relacionados no INEMA
 
 - [agente-claude-codex](https://inematds.github.io/agente-claude-codex/guia/): migrar do Claude para o Codex ou ficar agnóstico
