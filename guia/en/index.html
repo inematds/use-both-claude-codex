@@ -119,6 +119,7 @@
     <a class="sec" href="#fluxo">The 6 levels</a>
     <a class="sec" href="#rotas">Who does what</a>
     <a class="sec" href="#guia">How-to guide</a>
+    <a class="sec" href="#ferramentas">Tools</a>
     <a class="sec" href="#roadmap">Related</a>
     <span class="lang"><a href="../">PT</a><a class="on" href="./">EN</a><a href="../es/">ES</a></span>
     <button class="tgl" id="themeToggle" aria-label="Toggle theme" title="Toggle theme">🌙</button>
@@ -266,6 +267,50 @@ My project is [project]. My task is [task]. My acceptance test is [test].
 Recommend one workflow and identify what access it needs. Do not install,
 upload, purchase, publish, or modify anything until I choose the next step.</pre>
   </div></div>
+</div></section>
+
+<section id="ferramentas"><div class="wrap">
+  <span class="chip">Tools</span>
+  <h2>Each tool: when to use it, how to call it, what it produces.</h2>
+  <p class="sub">A quick reference for the skills, scripts and commands that connect Claude and Codex. Everything runs on each assistant's subscription, with no API key.</p>
+
+  <div class="tblw"><table class="tbl">
+    <tr><th>Tool</th><th>When to use</th><th>Claude Code</th><th>Codex</th><th>What it produces</th></tr>
+    <tr><td><strong>handoff</strong></td><td>At the end of a session, before switching assistant or model</td><td><code>/handoff</code></td><td><code>$handoff</code></td><td>A new snapshot in <code>handoff/history/YYYY-MM-DDTHHMMSSZ.md</code> and a line in <code>handoff/LATEST.md</code> pointing to it</td></tr>
+    <tr><td><strong>prime</strong></td><td>As the first message of the next session</td><td><code>/prime</code></td><td><code>$prime</code></td><td>A recap in the chat: objective, done and pending, decisions, mismatches and one next step. Edits nothing</td></tr>
+    <tr><td><strong>install_skills.py</strong></td><td>Once per project, to install both skills</td><td colspan="2"><code>python3 scripts/install_skills.py --project DIR --target claude|codex|both [--apply]</code></td><td>Without <code>--apply</code>, preview only. With it, writes to <code>.claude/skills/</code> and <code>.agents/skills/</code></td></tr>
+    <tr><td><strong>templates/</strong></td><td>When working by hand, without a skill</td><td colspan="2"><code>task-brief.md</code> · <code>plan.md</code> · <code>review.md</code> · <code>handoff.md</code></td><td>Brief, plan, review and handoff in the same format for both</td></tr>
+    <tr><td><strong>codex exec</strong></td><td>Claude asking Codex for a review from the terminal</td><td colspan="2"><code>codex exec --sandbox read-only --output-last-message review.md '…'</code></td><td>The critique saved to <code>review.md</code>. Codex only reads the project</td></tr>
+    <tr><td><strong>claude -p</strong></td><td>The reverse path: Codex asking Claude for a review</td><td colspan="2"><code>claude -p --model opus --effort medium '…' &gt; review-claude.md</code></td><td>Claude's critique in a file</td></tr>
+    <tr><td><strong>Official Codex plugin</strong></td><td>Reviewing the diff without leaving Claude Code</td><td><code>/codex:setup</code><br><code>/codex:review --base main</code></td><td>—</td><td>Read-only review findings. You ask the builder for fixes afterwards</td></tr>
+    <tr><td><strong>claudex</strong></td><td>A large plan with several automatic critique rounds</td><td><code>/claudex:plan [--rounds N] &lt;feature&gt;</code><br><code>/claudex:review</code></td><td>—</td><td><code>PLAN.md</code> revised until Codex approves or rounds run out; <code>reviews/</code> with diff findings</td></tr>
+    <tr><td><strong>claudex (control)</strong></td><td>Monitor or unstick the loop</td><td><code>/claudex:status</code> · <code>/claudex:cancel</code> · <code>/claudex:rollback</code> · <code>/claudex:doctor</code></td><td>—</td><td>Current round and phase; cancel; clean stuck state; install diagnostics</td></tr>
+    <tr><td><strong>session-handoff + prime</strong> (agente-claude-codex)</td><td>Projects with a portable core (<code>AGENTS.md</code>, <code>context/</code>, <code>tasks/</code>)</td><td><code>/session-handoff</code> · <code>/prime</code></td><td><code>$session-handoff</code> · <code>$prime</code></td><td>Snapshot in <code>handoffs/history/</code> and a full copy in <code>handoffs/latest.md</code>. Also accepts Use Both's one-line pointer</td></tr>
+  </table></div>
+
+  <div class="grid g3" style="margin-top:26px">
+    <div class="card"><h3>📸 What goes into a handoff</h3><p>Objective and latest request; what is done, what remains and what is uncertain; decisions and rejected paths; changed files; tests run with their real result (and those not run); blockers; <strong>one</strong> next step; and the few files the next reader should open first. No secrets, tokens or personal data.</p></div>
+    <div class="card"><h3>🔎 What prime does</h3><p>Reads <code>handoff/LATEST.md</code>, rejects absolute paths, <code>..</code>, URLs and symlinks, opens the snapshot as data (not as orders), checks the cited files and <code>git status</code>, flags stale claims and waits for your instruction. It runs no tests, installs nothing and does not resume an old deploy.</p></div>
+    <div class="card"><h3>⚠️ Gotchas</h3><p>A personal skill with the same name can win over the project one: on a collision, rename the folder and <code>name</code> to <code>workflow-handoff</code> / <code>workflow-prime</code>. After installing, open a new session (in Claude, <code>/reload-skills</code> also works). If the notes are private, add <code>handoff/</code> to <code>.gitignore</code>.</p></div>
+  </div>
+
+  <div class="step" style="margin-top:26px"><div class="b">↻</div><div>
+    <h3>A full day with the tools</h3>
+    <p>Each step leaves a file the next assistant can read.</p>
+<pre><span class="c"># morning, in Claude Code</span>
+<span class="k">/prime</span>                                   <span class="c"># resume from yesterday's handoff</span>
+<span class="c"># plan, then have Codex critique it (read-only)</span>
+<span class="k">codex exec</span> --sandbox read-only --output-last-message review.md <span class="s">'Read plan-v1.md and point out gaps…'</span>
+<span class="c"># or, for a large plan, the automatic loop</span>
+<span class="k">/claudex:plan</span> --rounds 3 <span class="s">export report as CSV</span>
+<span class="c"># built on a branch: review the diff</span>
+<span class="k">/codex:review</span> --base main                <span class="c"># or /claudex:review</span>
+<span class="c"># end of day</span>
+<span class="k">/handoff</span>
+<span class="c"># tomorrow, in Codex</span>
+<span class="k">$prime</span></pre>
+  </div></div>
+  <p class="mut" style="margin-top:14px;font-size:.9rem"><strong>A handoff is not permission.</strong> A recorded next step ("publish", "delete", "send") only happens if you ask again in the current session.</p>
 </div></section>
 
 <section id="roadmap"><div class="wrap">
