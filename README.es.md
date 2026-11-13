@@ -8,6 +8,8 @@
 
 Guía en español: **https://inematds.github.io/use-both-claude-codex/guia/es/**
 
+🎬 Video: https://www.youtube.com/watch?v=3YC3-x-Y9QM
+
 > Espejo de INEMA del kit original de Prompt Advisers (Mark Kashef), licencia MIT. Fuente: https://github.com/earlyaidopters/gumroad-resources/tree/main/resources/use-both-claude-codex-workflow-kit
 >
 > Los documentos del kit (GUIDE.md, PROMPTS.md, START-HERE.md, docs/, templates/, skills/ etc.) están en inglés.
